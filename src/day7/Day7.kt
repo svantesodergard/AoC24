@@ -3,73 +3,51 @@ package day7
 import java.io.File
 import kotlin.math.pow
 
-val input = File("src/day7/input").readLines().toList()
+val input = File("src/day7/test").readLines().toList()
 
 fun main() {
     part1()
     part2()
 }
 
-fun part2() {
-    fun String.isPossible(): Boolean {
-        val expectedResult = this.substring(0, this.indexOf(':')).toBigInteger()
-        val numbers = this.substring(this.indexOf(':') + 2).split(' ').map { it.trim().toBigInteger() }
-
-        //Prova alla olika operator-permutationer
-        for (operator in 0 until 3.0.pow((numbers.size - 1)).toInt()) {
-            //* representeras av 1 och + av 0 och || av 2
-            val operators = operator.toBaseThreeString().padStart(numbers.size - 1, '0')
-
-            var result = numbers[0]
-            numbers.subList(1, numbers.size).forEachIndexed { i, number ->
-                when (operators[i]) {
-                    '0' -> result += number
-                    '1' -> result *= number
-                    '2' -> result = ("" + result + number).toBigInteger()
-                }
-            }
-
-            if (result == expectedResult) {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    println("Grab a coffee...")
-    println( input.filter { it.isPossible() }.sumOf { it.substring(0, it.indexOf(':')).toBigInteger() } )
-}
-
 fun part1() {
-    fun String.isPossible(): Boolean {
-        val expectedResult = this.substring(0, this.indexOf(':')).toBigInteger()
-        val numbers = this.substring(this.indexOf(':') + 2).split(' ').map { it.trim().toBigInteger() }
+    println( input.filter { it.isPossible(2.0) }.sumOf { it.substring(0, it.indexOf(':')).toBigInteger() } )
+}
 
-        //Prova alla olika operator-permutationer
-        for (operator in 0 until 2.0.pow((numbers.size - 1)).toInt()) {
-            //* representeras av 1 och + av 0
-            val operators = Integer.toBinaryString(operator).padStart(numbers.size - 1, '0')
+fun part2() {
+    println("Grab a coffee...")
+    println( input.filter { it.isPossible(3.0) }.sumOf { it.substring(0, it.indexOf(':')).toBigInteger() } )
+}
 
-            var result = numbers[0]
-            numbers.subList(1, numbers.size).forEachIndexed { i, number ->
-                if (operators[i] == '0') {
-                    result += number
-                } else {
-                    result *= number
-                }
-            }
 
-            if (result == expectedResult) {
-                return true
+fun String.isPossible(base : Double): Boolean {
+    val expectedResult = this.substring(0, this.indexOf(':')).toBigInteger()
+    val numbers = this.substring(this.indexOf(':') + 2).split(' ').map { it.trim().toBigInteger() }
+
+    //Prova alla olika operator-permutationer
+    for (operator in 0 until base.pow((numbers.size - 1)).toInt()) {
+        //* representeras av 1 och + av 0 och || av 2
+        val operators = when(base) {
+            2.0 -> Integer.toBinaryString(operator).padStart(numbers.size - 1, '0')
+            else -> operator.toBaseThreeString().padStart(numbers.size - 1, '0')
+        }
+
+        var result = numbers[0]
+        numbers.subList(1, numbers.size).forEachIndexed { i, number ->
+            when (operators[i]) {
+                '0' -> result += number
+                '1' -> result *= number
+                '2' -> result = ("" + result + number).toBigInteger()
             }
         }
 
-        return false
+        if (result == expectedResult) {
+            return true
+        }
     }
-
-    println( input.filter { it.isPossible() }.sumOf { it.substring(0, it.indexOf(':')).toBigInteger() } )
+    return false
 }
+
 
 //Tack Geppe <3
 fun Int.toBaseThreeString(): String {
