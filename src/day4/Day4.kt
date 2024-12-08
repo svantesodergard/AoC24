@@ -8,9 +8,7 @@ val xmas = "XMAS"
 val xCoords = mutableListOf<Pair<Int, Int>>()
 
 fun main() {
-    twoDimensionalInput.forEachIndexed { y, row -> row.forEachIndexed { x, c ->
-        if (c == 'X') xCoords.add(Pair(x, y))
-    } }
+    part1()
     part2()
 }
 
@@ -20,24 +18,28 @@ fun part2() {
         if (c == 'A') aCoords.add(Pair(x, y))
     } }
 
-
     println( aCoords.count { it.xmas() } )
 }
 
-private fun Pair<Int, Int>.xmas(): Boolean {
-    return (this.mas(1, 0) && this.mas(0, 1) ) || (this.mas(1, 1) && this.mas(1, -1) )
+fun Pair<Int, Int>.xmas(): Boolean {
+    return (this.mas(1, 1) && this.mas(1, -1) )
 }
 
-private fun Pair<Int, Int>.mas(dx : Int, dy : Int): Boolean {
+fun Pair<Int, Int>.mas(dx : Int, dy : Int): Boolean {
     val first = twoDimensionalInput.getOrNull(this.second + dy)?.getOrNull(this.first + dx) ?: ""
     val second = twoDimensionalInput.getOrNull(this.second - dy)?.getOrNull(this.first - dx) ?: ""
     return ""+first + second == "MS" || ""+first + second == "SM"
 }
 
-fun part1() = println(
+fun part1() {
+    twoDimensionalInput.forEachIndexed { y, row -> row.forEachIndexed { x, c ->
+        if (c == 'X') xCoords.add(Pair(x, y))
+    } }
+    println(
     xCoords.sumOf { (-1..1).sumOf { dx -> (-1..1)
         .count { dy -> twoDimensionalInput[it.second][it.first].xmas(it.first, it.second, dx, dy) } }}
-)
+    )
+}
 
 fun Char.xmas(x : Int, y: Int, dx : Int, dy :Int) : Boolean {
     val nextChar = twoDimensionalInput.getOrNull(y + dy)?.getOrNull(x + dx) ?: return false
